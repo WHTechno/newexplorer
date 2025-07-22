@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warden Testnet Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"></div>
+                    <h2>Warden</h2>
+                </div>
+                <div class="search-container">
+                    <div class="search-icon"></div>
+                    <input type="text" placeholder="Search" class="search-input">
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#overview" class="nav-item active" data-page="overview">
+                    <div class="nav-icon overview-icon"></div>
+                    <span>Overview</span>
+                </a>
+                <a href="#blockchain" class="nav-item" data-page="blockchain">
+                    <div class="nav-icon blockchain-icon"></div>
+                    <span>Blockchain</span>
+                </a>
+                <a href="#blocks" class="nav-item" data-page="blocks">
+                    <div class="nav-icon blocks-icon"></div>
+                    <span>Blocks</span>
+                </a>
+                <a href="#transactions" class="nav-item" data-page="transactions">
+                    <div class="nav-icon transactions-icon"></div>
+                    <span>Transactions</span>
+                </a>
+                <a href="#accounts" class="nav-item" data-page="accounts">
+                    <div class="nav-icon accounts-icon"></div>
+                    <span>Top accounts</span>
+                </a>
+                <a href="#contracts" class="nav-item" data-page="contracts">
+                    <div class="nav-icon contracts-icon"></div>
+                    <span>Contracts & Code ID</span>
+                </a>
+                <a href="#validators" class="nav-item" data-page="validators">
+                    <div class="nav-icon validators-icon"></div>
+                    <span>Validators</span>
+                </a>
+                <a href="#proposals" class="nav-item" data-page="proposals">
+                    <div class="nav-icon proposals-icon"></div>
+                    <span>Proposals</span>
+                </a>
+                <a href="#utilities" class="nav-item" data-page="utilities">
+                    <div class="nav-icon utilities-icon"></div>
+                    <span>Utilities</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <h1 class="page-title">Warden explorer</h1>
+                    <div class="header-search">
+                        <input type="text" placeholder="Search an address, transaction, block or token..." class="header-search-input">
+                        <div class="search-btn"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Overview Page -->
+                <div id="overview-page" class="page active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon apr-icon"></div>
+                            <div class="stat-content">
+                                <div class="stat-label">APR</div>
+                                <div class="stat-value" id="apr-value">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bonded-icon"></div>
+                            <div class="stat-content">
+                                <div class="stat-label">Bonded / Supply</div>
+                                <div class="stat-value" id="bonded-value">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon validators-stat-icon"></div>
+                            <div class="stat-content">
+                                <div class="stat-label">Validators</div>
+                                <div class="stat-value" id="validators-value">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon gas-icon"></div>
+                            <div class="stat-content">
+                                <div class="stat-label">Gas tracker</div>
+                                <div class="stat-value" id="gas-value">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Transactions</h3>
+                        <div class="chart-container">
+                            <div class="chart-value" id="tx-count">Loading...</div>
+                            <canvas id="transactionChart" width="800" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blocks Page -->
+                <div id="blocks-page" class="page">
+                    <div class="page-header">
+                        <h2>Latest Blocks</h2>
+                        <div class="refresh-btn" onclick="loadBlocks()">Refresh</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Height</th>
+                                    <th>Hash</th>
+                                    <th>Time</th>
+                                    <th>Transactions</th>
+                                    <th>Proposer</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blocks-table-body">
+                                <tr><td colspan="5" class="loading">Loading blocks...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Transactions Page -->
+                <div id="transactions-page" class="page">
+                    <div class="page-header">
+                        <h2>Latest Transactions</h2>
+                        <div class="refresh-btn" onclick="loadTransactions()">Refresh</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Hash</th>
+                                    <th>Height</th>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-table-body">
+                                <tr><td colspan="5" class="loading">Loading transactions...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Validators Page -->
+                <div id="validators-page" class="page">
+                    <div class="page-header">
+                        <h2>Active Validators</h2>
+                        <div class="refresh-btn" onclick="loadValidators()">Refresh</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Validator</th>
+                                    <th>Voting Power</th>
+                                    <th>Commission</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="validators-table-body">
+                                <tr><td colspan="5" class="loading">Loading validators...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Utilities Page -->
+                <div id="utilities-page" class="page">
+                    <div class="page-header">
+                        <h2>Utilities</h2>
+                    </div>
+                    <div class="utilities-tabs">
+                        <button class="tab-btn active" onclick="showUtilityTab('api')">API</button>
+                        <button class="tab-btn" onclick="showUtilityTab('rpc')">RPC</button>
+                        <button class="tab-btn" onclick="showUtilityTab('endpoints')">Endpoints</button>
+                    </div>
+                    
+                    <div id="api-tab" class="utility-tab active">
+                        <h3>API Documentation</h3>
+                        <div class="api-section">
+                            <h4>Base URLs</h4>
+                            <div class="code-block">
+                                <div>RPC: https://warden-testnet-rpc.itrocket.net</div>
+                                <div>API: https://warden-testnet-api.itrocket.net</div>
+                            </div>
+                        </div>
+                        
+                        <div class="api-section">
+                            <h4>Available Endpoints</h4>
+                            <div class="endpoint-list">
+                                <div class="endpoint-item">
+                                    <div class="method">GET</div>
+                                    <div class="path">/status</div>
+                                    <div class="description">Get node status</div>
+                                </div>
+                                <div class="endpoint-item">
+                                    <div class="method">GET</div>
+                                    <div class="path">/block?height={height}</div>
+                                    <div class="description">Get block by height</div>
+                                </div>
+                                <div class="endpoint-item">
+                                    <div class="method">GET</div>
+                                    <div class="path">/blockchain?minHeight={min}&maxHeight={max}</div>
+                                    <div class="description">Get blockchain info</div>
+                                </div>
+                                <div class="endpoint-item">
+                                    <div class="method">GET</div>
+                                    <div class="path">/validators?height={height}</div>
+                                    <div class="description">Get validators</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="rpc-tab" class="utility-tab">
+                        <h3>RPC Information</h3>
+                        <div class="rpc-info">
+                            <p>Connect to the Warden testnet using the following RPC endpoint:</p>
+                            <div class="code-block">https://warden-testnet-rpc.itrocket.net</div>
+                        </div>
+                    </div>
+                    
+                    <div id="endpoints-tab" class="utility-tab">
+                        <h3>Network Endpoints</h3>
+                        <div class="endpoints-grid">
+                            <div class="endpoint-card">
+                                <h4>RPC Endpoint</h4>
+                                <div class="endpoint-url">https://warden-testnet-rpc.itrocket.net</div>
+                            </div>
+                            <div class="endpoint-card">
+                                <h4>API Endpoint</h4>
+                                <div class="endpoint-url">https://warden-testnet-api.itrocket.net</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other pages (placeholder) -->
+                <div id="blockchain-page" class="page">
+                    <h2>Blockchain Information</h2>
+                    <p>Blockchain overview and statistics will be displayed here.</p>
+                </div>
+
+                <div id="accounts-page" class="page">
+                    <h2>Top Accounts</h2>
+                    <p>Top accounts by balance will be displayed here.</p>
+                </div>
+
+                <div id="contracts-page" class="page">
+                    <h2>Contracts & Code ID</h2>
+                    <p>Smart contracts and code information will be displayed here.</p>
+                </div>
+
+                <div id="proposals-page" class="page">
+                    <h2>Governance Proposals</h2>
+                    <p>Governance proposals will be displayed here.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
