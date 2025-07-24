@@ -311,6 +311,73 @@ body {
     padding: 1rem;
 }
 
+/* Last Update Indicator */
+.last-update {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    text-align: right;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+/* Enhanced Toast Notifications */
+.toast.toast-error {
+    background: #dc3545;
+}
+
+.toast.toast-success {
+    background: #28a745;
+}
+
+.toast.toast-warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+.toast.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Retry Button Styling */
+.retry-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 8px;
+    transition: background 0.2s ease;
+}
+
+.retry-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* Error Detail Styling */
+.error-detail {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+/* Enhanced Table States */
+.error {
+    text-align: center;
+    color: #dc3545;
+    padding: 1rem;
+}
+
+.info {
+    text-align: center;
+    color: #17a2b8;
+    padding: 1rem;
+}
+
 #toast-container {
     position: fixed;
     bottom: 20px;

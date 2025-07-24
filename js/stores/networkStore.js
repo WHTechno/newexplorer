@@ -1,6 +1,6 @@
-import { NETWORKS, DEFAULT_NETWORK } from '../config/networks';
-import CosmosService from '../services/CosmosService';
-import EvmService from '../services/EvmService';
+import { NETWORKS, DEFAULT_NETWORK } from '../config/networks.js';
+import CosmosService from '../services/CosmosService.js';
+import EvmService from '../services/EvmService.js';
 
 class NetworkStore {
     constructor() {

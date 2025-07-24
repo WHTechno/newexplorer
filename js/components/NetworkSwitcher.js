@@ -1,5 +1,5 @@
-import networkStore from '../stores/networkStore';
-import { NETWORKS } from '../config/networks';
+import networkStore from '../stores/networkStore.js';
+import { NETWORKS } from '../config/networks.js';
 
 class NetworkSwitcher {
     constructor() {

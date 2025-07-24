@@ -1,5 +1,5 @@
-import ApiService from './ApiService';
-import { JSON_RPC_METHODS } from '../config/endpoints';
+import ApiService from './ApiService.js';
+import { JSON_RPC_METHODS } from '../config/endpoints.js';
 
 class EvmService extends ApiService {
     constructor(networkConfig) {

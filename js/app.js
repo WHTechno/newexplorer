@@ -1,19 +1,20 @@
-import NetworkSwitcher from './components/NetworkSwitcher';
-import Toast from './components/Toast';
-import networkStore from './stores/networkStore';
+import NetworkSwitcher from './components/NetworkSwitcher.js';
+import Toast from './components/Toast.js';
+import networkStore from './stores/networkStore.js';
 
 class App {
     constructor() {
         this.currentPage = 'overview';
+        this.realTimeInterval = null;
         this.initComponents();
         this.setupEventListeners();
         this.loadInitialData();
         this.setupNetworkListener();
+        this.startRealTimeUpdates();
     }
 
     initComponents() {
         this.networkSwitcher = new NetworkSwitcher();
-        this.toast = new Toast();
     }
 
     setupEventListeners() {
@@ -41,9 +42,29 @@ class App {
 
     setupNetworkListener() {
         networkStore.subscribe((network) => {
+            this.stopRealTimeUpdates();
             this.updateNetworkInfo();
             this.loadPageData(this.currentPage);
+            this.startRealTimeUpdates();
         });
+    }
+
+    startRealTimeUpdates() {
+        // Clear any existing interval
+        this.stopRealTimeUpdates();
+        
+        // Start new interval for real-time updates every 10 seconds
+        this.realTimeInterval = setInterval(() => {
+            this.updateNetworkInfo();
+            this.loadPageData(this.currentPage);
+        }, 10000);
+    }
+
+    stopRealTimeUpdates() {
+        if (this.realTimeInterval) {
+            clearInterval(this.realTimeInterval);
+            this.realTimeInterval = null;
+        }
     }
 
     async loadInitialData() {
@@ -52,7 +73,7 @@ class App {
             this.loadPageData(this.currentPage);
         } catch (error) {
             console.error('Initial data load failed:', error);
-            this.toast.show('Failed to load initial data', 'error');
+            Toast.show('Failed to load initial data', 'error');
         }
     }
 
@@ -61,6 +82,7 @@ class App {
         const networkNameEl = document.getElementById('network-name');
         const latestBlockEl = document.getElementById('latest-block');
         const validatorsCountEl = document.getElementById('validators-count');
+        const lastUpdateEl = document.getElementById('last-update');
         
         if (!networkNameEl || !latestBlockEl || !validatorsCountEl) {
             console.error('Required DOM elements not found');
@@ -73,11 +95,11 @@ class App {
             const api = networkStore.getApiService();
             
             if (network.type === 'cosmos') {
-                const status = await api.getStatus();
-                if (!status?.sync_info?.latest_block_height) {
-                    throw new Error('Invalid status response');
+                const latestBlock = await api.getLatestBlock();
+                if (!latestBlock?.block?.header?.height) {
+                    throw new Error('Invalid latest block response');
                 }
-                latestBlockEl.textContent = status.sync_info.latest_block_height;
+                latestBlockEl.textContent = latestBlock.block.header.height;
                 
                 const validators = await api.getValidators();
                 validatorsCountEl.textContent = validators?.length ?? 'N/A';
@@ -86,11 +108,19 @@ class App {
                 latestBlockEl.textContent = blockNumber ? parseInt(blockNumber, 16) : 'N/A';
                 validatorsCountEl.textContent = 'N/A';
             }
+
+            // Update last updated timestamp
+            if (lastUpdateEl) {
+                lastUpdateEl.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            }
         } catch (error) {
             console.error('Error updating network info:', error);
             latestBlockEl.textContent = 'Error';
             validatorsCountEl.textContent = 'Error';
-            this.toast.show('Failed to update network info', 'error');
+            if (lastUpdateEl) {
+                lastUpdateEl.textContent = `Last update failed: ${new Date().toLocaleTimeString()}`;
+            }
+            Toast.show('Failed to update network info', 'error');
         }
     }
 
@@ -200,7 +230,7 @@ class App {
                     </td>
                 </tr>
             `;
-            this.toast.show('Failed to load blocks', 'error');
+            Toast.show('Failed to load blocks', 'error');
         }
     }
 
@@ -270,7 +300,7 @@ class App {
                     </td>
                 </tr>
             `;
-            this.toast.show('Failed to load transactions', 'error');
+            Toast.show('Failed to load transactions', 'error');
         }
     }
 
@@ -314,13 +344,13 @@ class App {
                     </td>
                 </tr>
             `;
-            this.toast.show('Failed to load validators', 'error');
+            Toast.show('Failed to load validators', 'error');
         }
     }
 
     handleSearch(query) {
         if (!query) {
-            this.toast.show('Please enter a search query', 'warning');
+            Toast.show('Please enter a search query', 'warning');
             return;
         }
 
@@ -333,7 +363,7 @@ class App {
         } else if (/^[a-zA-Z0-9]{40,64}$/.test(query)) {
             this.showAddress(query);
         } else {
-            this.toast.show('Invalid search query. Please enter a block height, transaction hash, or address.', 'error');
+            Toast.show('Invalid search query. Please enter a block height, transaction hash, or address.', 'error');
         }
     }
 
@@ -345,10 +375,10 @@ class App {
             }
             // Implement block detail view here
             console.log('Block details:', block);
-            this.toast.show(`Block ${height} details loaded`, 'success');
+            Toast.show(`Block ${height} details loaded`, 'success');
         } catch (error) {
             console.error('Error showing block:', error);
-            this.toast.show(`Failed to load block ${height}: ${error.message}`, 'error');
+            Toast.show(`Failed to load block ${height}: ${error.message}`, 'error');
         }
     }
 
@@ -369,10 +399,10 @@ class App {
             
             // Implement transaction detail view here
             console.log('Transaction details:', tx);
-            this.toast.show(`Transaction ${this.formatHash(hash)} details loaded`, 'success');
+            Toast.show(`Transaction ${this.formatHash(hash)} details loaded`, 'success');
         } catch (error) {
             console.error('Error showing transaction:', error);
-            this.toast.show(`Failed to load transaction ${this.formatHash(hash)}: ${error.message}`, 'error');
+            Toast.show(`Failed to load transaction ${this.formatHash(hash)}: ${error.message}`, 'error');
         }
     }
 
@@ -394,10 +424,10 @@ class App {
             
             // Implement account detail view here
             console.log('Account details:', account);
-            this.toast.show(`Account ${this.formatHash(address)} details loaded`, 'success');
+            Toast.show(`Account ${this.formatHash(address)} details loaded`, 'success');
         } catch (error) {
             console.error('Error showing address:', error);
-            this.toast.show(`Failed to load account ${this.formatHash(address)}: ${error.message}`, 'error');
+            Toast.show(`Failed to load account ${this.formatHash(address)}: ${error.message}`, 'error');
         }
     }
 

@@ -1,4 +1,4 @@
-import ApiService from './ApiService';
+import ApiService from './ApiService.js';
 
 class CosmosService extends ApiService {
     constructor(networkConfig) {
@@ -7,8 +7,8 @@ class CosmosService extends ApiService {
 
     async getValidators() {
         try {
-            const data = await this.fetchWithTimeout(`${this.baseRpcUrl}${this.endpoints.validators}`);
-            return data.result.validators;
+            const data = await this.fetchWithTimeout(`${this.baseApiUrl}${this.endpoints.validators}`);
+            return data.validators || [];
         } catch (error) {
             console.error('Error fetching validators:', error);
             throw error;
@@ -28,9 +28,9 @@ class CosmosService extends ApiService {
 
     async getTransaction(hash) {
         try {
-            const url = `${this.baseRpcUrl}${this.endpoints.tx.replace('{hash}', hash)}`;
+            const url = `${this.baseApiUrl}${this.endpoints.tx.replace('{hash}', hash)}`;
             const data = await this.fetchWithTimeout(url);
-            return data.result;
+            return data.tx_response;
         } catch (error) {
             console.error(`Error fetching transaction ${hash}:`, error);
             throw error;

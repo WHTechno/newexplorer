@@ -1,4 +1,4 @@
-import { ENDPOINTS } from '../config/endpoints';
+import { ENDPOINTS } from '../config/endpoints.js';
 
 class ApiService {
     constructor(networkConfig) {
@@ -37,10 +37,23 @@ class ApiService {
             throw new Error('Status endpoint not available for this network type');
         }
         try {
-            const data = await this.fetchWithTimeout(`${this.baseRpcUrl}${this.endpoints.status}`);
-            return data.result;
+            const data = await this.fetchWithTimeout(`${this.baseApiUrl}${this.endpoints.status}`);
+            return data;
         } catch (error) {
             console.error('Error fetching status:', error);
+            throw error;
+        }
+    }
+
+    async getLatestBlock() {
+        if (!this.endpoints.latestBlock) {
+            throw new Error('Latest block endpoint not available for this network type');
+        }
+        try {
+            const data = await this.fetchWithTimeout(`${this.baseApiUrl}${this.endpoints.latestBlock}`);
+            return data;
+        } catch (error) {
+            console.error('Error fetching latest block:', error);
             throw error;
         }
     }
@@ -50,9 +63,9 @@ class ApiService {
             throw new Error('Block endpoint not available for this network type');
         }
         try {
-            const url = `${this.baseRpcUrl}${this.endpoints.block.replace('{height}', height)}`;
+            const url = `${this.baseApiUrl}${this.endpoints.block.replace('{height}', height)}`;
             const data = await this.fetchWithTimeout(url);
-            return data.result;
+            return data;
         } catch (error) {
             console.error(`Error fetching block ${height}:`, error);
             throw error;
@@ -61,20 +74,33 @@ class ApiService {
 
     async getLatestBlocks(limit = 10) {
         try {
-            const status = await this.getStatus();
-            const latestHeight = parseInt(status.sync_info.latest_block_height);
-            const minHeight = Math.max(1, latestHeight - limit + 1);
-            
-            const url = `${this.baseRpcUrl}${this.endpoints.blockchain}`
-                .replace('{min}', minHeight)
-                .replace('{max}', latestHeight);
-            
-            const data = await this.fetchWithTimeout(url);
-            
-            if (data.result && data.result.block_metas) {
-                return data.result.block_metas.reverse();
+            const latestBlock = await this.getLatestBlock();
+            if (!latestBlock?.block?.header?.height) {
+                throw new Error('Unable to get latest block height');
             }
-            return [];
+            
+            const latestHeight = parseInt(latestBlock.block.header.height);
+            const blocks = [];
+            
+            // Fetch the last 'limit' blocks
+            for (let i = 0; i < limit && (latestHeight - i) > 0; i++) {
+                try {
+                    const blockHeight = latestHeight - i;
+                    const block = await this.getBlock(blockHeight);
+                    if (block?.block) {
+                        blocks.push({
+                            header: block.block.header,
+                            block_id: block.block_id,
+                            num_txs: block.block.data?.txs?.length || 0
+                        });
+                    }
+                } catch (blockError) {
+                    console.warn(`Failed to fetch block ${latestHeight - i}:`, blockError);
+                    // Continue with other blocks even if one fails
+                }
+            }
+            
+            return blocks;
         } catch (error) {
             console.error('Error fetching latest blocks:', error);
             throw error;
