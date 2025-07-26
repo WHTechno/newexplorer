@@ -31,7 +31,7 @@ export default function BlockDetailPage() {
       setBlock(blockData);
     } catch (err) {
       console.error('Error fetching block detail:', err);
-      setError('Gagal memuat detail blok. Blok mungkin tidak ditemukan.');
+      setError('Failed to load block details. Block may not be found.');
     } finally {
       setIsLoading(false);
     }
@@ -91,13 +91,13 @@ export default function BlockDetailPage() {
               onClick={fetchBlockDetail}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
-              Coba Lagi
+              Try Again
             </button>
             <button
               onClick={() => router.push('/blocks')}
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
-              Kembali ke Blocks
+              Back to Blocks
             </button>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function BlockDetailPage() {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h3 className="text-sm font-medium text-gray-900">Blok tidak ditemukan</h3>
+          <h3 className="text-sm font-medium text-gray-900">Block not found</h3>
         </div>
       </Layout>
     );
@@ -138,7 +138,7 @@ export default function BlockDetailPage() {
               </h1>
             </div>
             <p className="text-gray-600 mt-1">
-              Detail informasi blok pada height {formatNumber(blockHeight)}
+              Block details at height {formatNumber(blockHeight)}
             </p>
           </div>
 
@@ -252,7 +252,7 @@ export default function BlockDetailPage() {
               <div>
                 <dt className="text-sm font-medium text-gray-600">Proposer Address</dt>
                 <dd className="mt-1 text-sm text-gray-900 font-mono break-all">
-                  {block.header.proposer_address || 'N/A'}
+                  {block.header.proposer_address ? base64ToHex(block.header.proposer_address).toUpperCase() : 'N/A'}
                 </dd>
               </div>
               

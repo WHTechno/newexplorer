@@ -72,7 +72,7 @@ export default function TransactionDetailPage() {
       setTransaction(txData);
     } catch (err) {
       console.error('Error fetching transaction detail:', err);
-      setError('Gagal memuat detail transaksi. Transaksi mungkin tidak ditemukan.');
+      setError('Failed to load transaction details. Transaction may not be found.');
     } finally {
       setIsLoading(false);
     }
@@ -126,13 +126,13 @@ export default function TransactionDetailPage() {
               onClick={fetchTransactionDetail}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
-              Coba Lagi
+              Try Again
             </button>
             <button
               onClick={() => router.push('/transactions')}
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
-              Kembali ke Transactions
+              Back to Transactions
             </button>
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function TransactionDetailPage() {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h3 className="text-sm font-medium text-gray-900">Transaksi tidak ditemukan</h3>
+          <h3 className="text-sm font-medium text-gray-900">Transaction not found</h3>
         </div>
       </Layout>
     );
@@ -172,11 +172,11 @@ export default function TransactionDetailPage() {
                 </svg>
               </button>
               <h1 className="text-3xl font-bold text-gray-900">
-                Detail Transaksi
+                Transaction Details
               </h1>
             </div>
             <p className="text-gray-600 mt-1">
-              Transaksi {primaryType} di jaringan {currentNetwork.chainId}
+              {primaryType} transaction on network {currentNetwork.chainId}
             </p>
           </div>
         </div>
@@ -188,9 +188,9 @@ export default function TransactionDetailPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">Sumber Data</h3>
+              <h3 className="text-sm font-medium text-blue-800">Data Source</h3>
               <p className="text-sm text-blue-700 mt-1">
-                Detail transaksi diambil dari endpoint: <code className="bg-blue-100 px-1 rounded">/cosmos/tx/v1beta1/txs/{hash}</code>
+                Transaction details fetched from endpoint: <code className="bg-blue-100 px-1 rounded">/cosmos/tx/v1beta1/txs/{hash}</code>
               </p>
             </div>
           </div>
@@ -216,7 +216,7 @@ export default function TransactionDetailPage() {
               <div className="ml-4">
                 <div className="text-sm font-medium text-gray-600">Status</div>
                 <div className={`text-2xl font-bold ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
-                  {isSuccess ? 'Berhasil' : 'Gagal'}
+                  {isSuccess ? 'Success' : 'Failed'}
                 </div>
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function TransactionDetailPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Tinggi Blok</div>
+                <div className="text-sm font-medium text-gray-600">Block Height</div>
                 <div className="text-2xl font-bold text-gray-900">{transaction.height}</div>
               </div>
             </div>
@@ -244,7 +244,7 @@ export default function TransactionDetailPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Biaya</div>
+                <div className="text-sm font-medium text-gray-600">Fee</div>
                 <div className="text-2xl font-bold text-gray-900">{feeAmount}</div>
               </div>
             </div>
@@ -258,7 +258,7 @@ export default function TransactionDetailPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Gas Digunakan</div>
+                <div className="text-sm font-medium text-gray-600">Gas Used</div>
                 <div className="text-lg font-bold text-gray-900">
                   {parseInt(transaction.gas_used || '0').toLocaleString()}
                 </div>
@@ -270,39 +270,39 @@ export default function TransactionDetailPage() {
         {/* Transaction Details */}
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Informasi Transaksi</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Transaction Information</h3>
           </div>
           <div className="p-6">
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <dt className="text-sm font-medium text-gray-600">Hash Transaksi</dt>
+                <dt className="text-sm font-medium text-gray-600">Transaction Hash</dt>
                 <dd className="mt-1 text-sm text-gray-900 font-mono break-all">{transaction.txhash}</dd>
               </div>
               
               <div>
-                <dt className="text-sm font-medium text-gray-600">Tinggi Blok</dt>
+                <dt className="text-sm font-medium text-gray-600">Block Height</dt>
                 <dd className="mt-1 text-sm text-gray-900">{transaction.height}</dd>
               </div>
               
               <div>
-                <dt className="text-sm font-medium text-gray-600">Waktu</dt>
+                <dt className="text-sm font-medium text-gray-600">Timestamp</dt>
                 <dd className="mt-1 text-sm text-gray-900">{formatTime(transaction.timestamp)}</dd>
               </div>
               
               <div>
-                <dt className="text-sm font-medium text-gray-600">Gas Digunakan / Diinginkan</dt>
+                <dt className="text-sm font-medium text-gray-600">Gas Used / Wanted</dt>
                 <dd className="mt-1 text-sm text-gray-900">
                   {parseInt(transaction.gas_used || '0').toLocaleString()} / {parseInt(transaction.gas_wanted || '0').toLocaleString()}
                 </dd>
               </div>
               
               <div>
-                <dt className="text-sm font-medium text-gray-600">Biaya</dt>
+                <dt className="text-sm font-medium text-gray-600">Fee</dt>
                 <dd className="mt-1 text-sm text-gray-900">{feeAmount}</dd>
               </div>
               
               <div>
-                <dt className="text-sm font-medium text-gray-600">Jumlah Pesan</dt>
+                <dt className="text-sm font-medium text-gray-600">Message Count</dt>
                 <dd className="mt-1 text-sm text-gray-900">{messageTypes.length}</dd>
               </div>
             </dl>
@@ -314,7 +314,7 @@ export default function TransactionDetailPage() {
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
-                Pesan ({messageTypes.length})
+                Messages ({messageTypes.length})
               </h3>
             </div>
             <div className="p-6">
@@ -324,7 +324,7 @@ export default function TransactionDetailPage() {
                     <div className="flex items-center justify-between mb-3">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          Pesan #{index + 1}: {parseTxType(message['@type'])}
+                          Message #{index + 1}: {parseTxType(message['@type'])}
                         </div>
                         <div className="text-xs text-gray-500 font-mono mt-1">
                           {message['@type']}
@@ -336,21 +336,21 @@ export default function TransactionDetailPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       {message.from_address && (
                         <div>
-                          <dt className="text-xs font-medium text-gray-600">Dari</dt>
+                          <dt className="text-xs font-medium text-gray-600">From</dt>
                           <dd className="mt-1 text-xs text-gray-900 font-mono break-all">{message.from_address}</dd>
                         </div>
                       )}
                       
                       {message.to_address && (
                         <div>
-                          <dt className="text-xs font-medium text-gray-600">Ke</dt>
+                          <dt className="text-xs font-medium text-gray-600">To</dt>
                           <dd className="mt-1 text-xs text-gray-900 font-mono break-all">{message.to_address}</dd>
                         </div>
                       )}
                       
                       {message.amount && message.amount.length > 0 && (
                         <div>
-                          <dt className="text-xs font-medium text-gray-600">Jumlah</dt>
+                          <dt className="text-xs font-medium text-gray-600">Amount</dt>
                           <dd className="mt-1 text-xs text-gray-900">
                             {message.amount.map((amt: any, i: number) => (
                               <div key={i}>
@@ -363,7 +363,7 @@ export default function TransactionDetailPage() {
                     </div>
                     
                     <div className="bg-gray-50 rounded p-3">
-                      <div className="text-xs font-medium text-gray-600 mb-2">Data Mentah:</div>
+                      <div className="text-xs font-medium text-gray-600 mb-2">Raw Data:</div>
                       <pre className="text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
                         {JSON.stringify(message, null, 2)}
                       </pre>
@@ -381,7 +381,7 @@ export default function TransactionDetailPage() {
             onClick={() => router.push('/transactions')}
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
-            Kembali ke Transaksi
+            Back to Transactions
           </button>
         </div>
       </div>

@@ -55,7 +55,7 @@ export default function SearchBar() {
       console.error('Search error:', error);
       setSearchResults({
         found: false,
-        error: 'Pencarian gagal. Silakan coba lagi.',
+        error: 'Search failed. Please try again.',
         type: 'error'
       });
       setShowSuggestions(true);
@@ -91,7 +91,7 @@ export default function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          placeholder="Cari blok, transaksi, atau alamat..."
+          placeholder="Search block, transaction, or address..."
           className="w-full md:w-80 px-4 py-2 pl-10 pr-10 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           disabled={isLoading}
         />
@@ -132,12 +132,12 @@ export default function SearchBar() {
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm font-medium">Tidak ditemukan</span>
+                <span className="text-sm font-medium">Not found</span>
               </div>
               <p className="text-sm text-gray-600 mt-1">{searchResults.error}</p>
               {/* Show endpoint information */}
               <div className="mt-2 p-2 bg-blue-50 rounded text-xs">
-                <div className="font-medium text-blue-800">Endpoint yang digunakan:</div>
+                <div className="font-medium text-blue-800">Used endpoint:</div>
                 {searchResults.type === 'transaction' && (
                   <code className="text-blue-700">/cosmos/tx/v1beta1/txs/{query}</code>
                 )}
@@ -151,14 +151,14 @@ export default function SearchBar() {
           {/* Address summary if found */}
           {searchResults && searchResults.found && searchResults.type === 'address' && (
             <div className="p-4 border-b border-gray-200">
-              <div className="mb-2 text-xs text-gray-500">Ringkasan Alamat</div>
+              <div className="mb-2 text-xs text-gray-500">Address Summary</div>
               <div className="font-mono text-sm break-all mb-2">{query}</div>
               <div className="grid grid-cols-1 gap-2 text-xs mb-2">
-                <div><span className="font-medium text-gray-700">Tipe Akun:</span> {searchResults.account?.['@type']?.split('.').pop() || 'Standard Account'}</div>
+                <div><span className="font-medium text-gray-700">Account Type:</span> {searchResults.account?.['@type']?.split('.').pop() || 'Standard Account'}</div>
                 <div><span className="font-medium text-gray-700">Account Number:</span> {searchResults.account?.account_number || 'N/A'}</div>
                 <div><span className="font-medium text-gray-700">Sequence:</span> {searchResults.account?.sequence || '0'}</div>
                 <div><span className="font-medium text-gray-700">Balance:</span> {searchResults.balances && searchResults.balances.length > 0 ? `${parseFloat(searchResults.balances[0].amount).toLocaleString()} ${searchResults.balances[0].denom.toUpperCase()}` : '0'}</div>
-                <div><span className="font-medium text-gray-700">Delegasi:</span> {searchResults.delegations ? searchResults.delegations.length : 0}</div>
+                <div><span className="font-medium text-gray-700">Delegations:</span> {searchResults.delegations ? searchResults.delegations.length : 0}</div>
               </div>
               {/* Rewards summary */}
               {searchResults.rewards && (
@@ -170,7 +170,7 @@ export default function SearchBar() {
                 className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 px-4 rounded"
                 onMouseDown={e => { e.preventDefault(); router.push(`/address/${query}`); }}
               >
-                Lihat Detail
+                View Details
               </button>
             </div>
           )}
@@ -179,26 +179,26 @@ export default function SearchBar() {
           {query && (
             <div className="p-3">
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-xs text-gray-500">💡 Tips pencarian:</span>
+                <span className="text-xs text-gray-500">💡 Search tips:</span>
               </div>
               <ul className="space-y-1 text-xs text-gray-600">
-                <li>• <strong>Nomor blok:</strong> contoh "12345"</li>
-                <li>• <strong>Hash transaksi:</strong> 64 karakter hex</li>
-                <li>• <strong>Alamat:</strong> dimulai dengan "{currentNetwork.chainId.split('-')[0]}"</li>
+                <li>• <strong>Block number:</strong> example "12345"</li>
+                <li>• <strong>Transaction hash:</strong> 64 hex characters</li>
+                <li>• <strong>Address:</strong> starts with "{currentNetwork.chainId.split('-')[0]}"</li>
               </ul>
               
               {/* Show current search type */}
               {query.trim() && (
                 <div className="mt-2 p-2 bg-gray-50 rounded">
                   <div className="text-xs font-medium text-gray-700">
-                    Tipe pencarian: {determineSearchType(query.trim()) === 'tx' ? 'Transaksi' : 
-                                   determineSearchType(query.trim()) === 'address' ? 'Alamat' : 
-                                   determineSearchType(query.trim()) === 'block' ? 'Blok' : 'Otomatis'}
+                    Search type: {determineSearchType(query.trim()) === 'tx' ? 'Transaction' : 
+                                   determineSearchType(query.trim()) === 'address' ? 'Address' : 
+                                   determineSearchType(query.trim()) === 'block' ? 'Block' : 'Automatic'}
                   </div>
                   <div className="text-xs text-gray-600 mt-1">
-                    {determineSearchType(query.trim()) === 'tx' && 'Menggunakan endpoint: /cosmos/tx/v1beta1/txs/'}
-                    {determineSearchType(query.trim()) === 'address' && 'Menggunakan endpoint: /cosmos/staking/v1beta1/delegations/'}
-                    {determineSearchType(query.trim()) === 'block' && 'Menggunakan endpoint: /cosmos/base/tendermint/v1beta1/blocks/'}
+                    {determineSearchType(query.trim()) === 'tx' && 'Using endpoint: /cosmos/tx/v1beta1/txs/'}
+                    {determineSearchType(query.trim()) === 'address' && 'Using endpoint: /cosmos/staking/v1beta1/delegations/'}
+                    {determineSearchType(query.trim()) === 'block' && 'Using endpoint: /cosmos/base/tendermint/v1beta1/blocks/'}
                   </div>
                 </div>
               )}

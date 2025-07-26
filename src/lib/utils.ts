@@ -146,14 +146,10 @@ export function formatPercentage(percentage: number, decimals = 2): string {
   return `${percentage.toFixed(decimals)}%`;
 }
 
-// Check if string is valid address
+// Check if string is valid address (support any bech32 prefix)
 export function isValidAddress(address: string): boolean {
-  // Basic validation for Cosmos addresses
-  return /^[a-z0-9]{39,59}$/.test(address) && (
-    address.startsWith('cosmos') || 
-    address.startsWith('cosmosvaloper') ||
-    address.startsWith('cosmosvalcons')
-  );
+  // Cosmos SDK address: bech32, 39-59 chars, lowercase, starts with a-z prefix
+  return /^[a-z][a-z0-9]{2,20}1[0-9a-z]{30,60}$/.test(address);
 }
 
 // Check if string is valid transaction hash

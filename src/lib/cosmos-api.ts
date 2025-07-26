@@ -220,16 +220,19 @@ export async function getTransactions(network: Network, limit = 10, paginationKe
     const data = await apiCall(url);
     if (data.tx_responses && data.tx_responses.length > 0) {
       return {
-        transactions: data.tx_responses,
-        pagination: data.pagination || null
+        transactions: data.tx_responses.slice(0, limit),
+        pagination: data.pagination || null,
+        total: data.pagination?.total ? Number(data.pagination.total) : data.tx_responses.length
       };
     } else {
       // Fallback ke blok terbaru jika tidak ada transaksi
-      return await getRecentTransactions(network, limit);
+      const fallback = await getRecentTransactions(network, limit);
+      return { ...fallback, transactions: fallback.transactions.slice(0, limit), total: fallback.total };
     }
   } catch (err) {
     // Fallback ke blok terbaru jika error
-    return await getRecentTransactions(network, limit);
+    const fallback = await getRecentTransactions(network, limit);
+    return { ...fallback, transactions: fallback.transactions.slice(0, limit), total: fallback.total };
   }
 }
 

@@ -44,7 +44,7 @@ export default function BlockCard({ block }: BlockCardProps) {
         
         <div className="text-right">
           <div className="text-sm font-medium text-foreground">
-            {txCount} Transaksi
+            {txCount} Transactions
           </div>
           <div className="text-xs text-foreground">
             {formatTime(block.header.time)}
@@ -57,15 +57,13 @@ export default function BlockCard({ block }: BlockCardProps) {
           <span className="text-foreground">Height:</span>
           <div className="font-medium text-foreground">{formatNumber(height)}</div>
           <span className="text-foreground">Hash (hex):</span>
-          <div className="font-mono text-foreground">{base64ToHex(block.hash)}</div>
-          <span className="text-foreground">Hash (base64):</span>
-          <div className="font-mono text-foreground">{block.hash}</div>
+          <div className="font-mono text-foreground">{block.hash ? block.hash.toUpperCase() : 'N/A'}</div>
         </div>
         
         <div>
           <span className="text-foreground">Proposer:</span>
           <div className="font-mono text-foreground">
-            {truncateHash(block.header.proposer_address, 6)}
+            {block.header.proposer_address ? base64ToHex(block.header.proposer_address).toUpperCase() : 'N/A'}
           </div>
         </div>
         
@@ -96,7 +94,7 @@ export default function BlockCard({ block }: BlockCardProps) {
             href={`/blocks/${height}`}
             className="text-foreground hover:text-primary font-medium text-sm transition-colors"
           >
-            Lihat Detail →
+            View Details →
           </Link>
         </div>
       </div>

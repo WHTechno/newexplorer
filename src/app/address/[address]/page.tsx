@@ -7,6 +7,19 @@ import { searchAddressByAddress, getDelegations, getStakingRewards } from '@/lib
 import { formatTokenAmountWithNetwork, truncateAddress } from '@/lib/utils';
 import { useNetwork } from '@/contexts/NetworkContext';
 
+function CopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={() => { navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1000); }}
+      className="ml-2 px-2 py-1 text-xs bg-gray-200 text-gray-900 rounded hover:bg-gray-300 font-mono border border-gray-300"
+      title="Copy address"
+    >
+      {copied ? 'Copied!' : 'Copy'}
+    </button>
+  );
+}
+
 export default function AddressDetailPage() {
   const { currentNetwork } = useNetwork();
   const params = useParams();
@@ -150,22 +163,26 @@ export default function AddressDetailPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Address Details
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900">Address Details</h1>
             </div>
-            <p className="text-gray-600 mt-1 font-mono">
-              {truncateAddress(address, 12, 12)}
-            </p>
+            <div className="flex items-center mt-2">
+              <span className="font-mono text-base bg-gray-100 text-gray-900 px-2 py-1 rounded break-all">{address}</span>
+              <CopyButton value={address} />
+              {addressData.account?.['@type'] && (
+                <span className="ml-2 px-2 py-1 text-xs rounded bg-blue-100 text-blue-700 font-semibold">
+                  {addressData.account['@type'].split('.').pop()}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Balance Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
+          <div className="bg-white border border-green-200 text-foreground rounded-xl p-6 shadow-md">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
@@ -177,11 +194,10 @@ export default function AddressDetailPage() {
               </div>
             </div>
           </div>
-
-          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
+          <div className="bg-white border border-blue-200 text-foreground rounded-xl p-6 shadow-md">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -193,11 +209,10 @@ export default function AddressDetailPage() {
               </div>
             </div>
           </div>
-
-          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
+          <div className="bg-white border border-purple-200 text-foreground rounded-xl p-6 shadow-md">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12z" />
                 </svg>
               </div>
@@ -212,15 +227,18 @@ export default function AddressDetailPage() {
         </div>
 
         {/* Address Information */}
-        <div className="bg-surface border border-default text-foreground rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
+        <div className="bg-white border border-gray-200 text-foreground rounded-lg shadow-md">
+          <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="text-lg font-semibold text-gray-900">Address Information</h3>
           </div>
           <div className="p-6">
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <dt className="text-sm font-medium text-gray-600">Address</dt>
-                <dd className="mt-1 text-sm text-gray-900 font-mono break-all">{address}</dd>
+                <dd className="mt-1 text-sm text-gray-900 font-mono break-all flex items-center">
+                  {address}
+                  <CopyButton value={address} />
+                </dd>
               </div>
               
               <div>
@@ -245,8 +263,8 @@ export default function AddressDetailPage() {
 
         {/* Balances */}
         {addressData.balances.length > 0 && (
-          <div className="bg-surface border border-default text-foreground rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-200">
+          <div className="bg-white border border-gray-200 text-foreground rounded-lg shadow-md">
+            <div className="px-6 py-4 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900">
                 Token Balances ({addressData.balances.length})
               </h3>
@@ -254,14 +272,10 @@ export default function AddressDetailPage() {
             <div className="p-6">
               <div className="space-y-4">
                 {addressData.balances.map((balance: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg bg-gray-50">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {balance.denom.toUpperCase()}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {balance.denom}
-                      </div>
+                      <span className="inline-block px-2 py-1 text-xs rounded bg-blue-100 text-blue-700 font-semibold mr-2">{balance.denom.toUpperCase()}</span>
+                      <span className="text-xs text-gray-500">{balance.denom}</span>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-gray-900">
@@ -277,8 +291,8 @@ export default function AddressDetailPage() {
 
         {/* Delegations */}
         {delegations.length > 0 && (
-          <div className="bg-surface border border-default text-foreground rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-200">
+          <div className="bg-white border border-gray-200 text-foreground rounded-lg shadow-md">
+            <div className="px-6 py-4 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900">
                 Delegations ({delegations.length})
               </h3>
@@ -286,14 +300,12 @@ export default function AddressDetailPage() {
             <div className="p-6">
               <div className="space-y-4">
                 {delegations.map((delegation: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg bg-gray-50">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        Validator
-                      </div>
-                      <div className="text-xs text-gray-500 font-mono">
+                      <span className="inline-block px-2 py-1 text-xs rounded bg-purple-100 text-purple-700 font-semibold mr-2">Validator</span>
+                      <span className="text-xs text-gray-500 font-mono">
                         {truncateAddress(delegation.delegation?.validator_address || '', 8, 8)}
-                      </div>
+                      </span>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-gray-900">

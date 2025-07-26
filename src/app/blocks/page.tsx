@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import BlockCard from '@/components/BlockCard';
 import { getBlockByHeight } from '@/lib/cosmos-api';
+import { base64ToHex } from '@/lib/utils';
 import { useNetwork } from '@/contexts/NetworkContext';
 
 export default function BlocksPage() {
@@ -12,6 +13,9 @@ export default function BlocksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [total, setTotal] = useState<number | undefined>(undefined);
+  const totalPages = total ? Math.ceil(total / limit) : page;
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -24,7 +28,7 @@ export default function BlocksPage() {
     return () => clearInterval(interval);
   }, [currentNetwork]);
 
-  const fetchBlocks = async (pageNum: number, reset = false) => {
+  const fetchBlocks = async (pageNum: number, reset = false, customLimit?: number) => {
     try {
       if (reset) {
         setIsLoading(true);
@@ -35,34 +39,49 @@ export default function BlocksPage() {
 
       const latestBlock = await getBlockByHeight(currentNetwork, 'latest');
       const latestHeight = parseInt(latestBlock.header.height);
-      const limit = 10;
-      const startHeight = Math.max(1, latestHeight - (pageNum - 1) * limit);
-      const endHeight = Math.max(1, startHeight - limit + 1);
+      const useLimit = customLimit || limit;
+      const startHeight = Math.max(1, latestHeight - (pageNum - 1) * useLimit);
+      const endHeight = Math.max(1, startHeight - useLimit + 1);
+      setTotal(latestHeight);
 
       const blocks: any[] = [];
       for (let height = startHeight; height >= endHeight; height--) {
         try {
           const block = await getBlockByHeight(currentNetwork, height.toString());
-          blocks.push({ ...block, hash: block.block_id?.hash || '' });
+          blocks.push({ ...block, hash: block.block_id?.hash ? base64ToHex(block.block_id.hash).toUpperCase() : '' });
         } catch (error) {
           console.error(`Error fetching block ${height}:`, error);
         }
       }
 
-      if (reset) {
-        setBlocks(blocks);
-      } else {
-        setBlocks(prev => [...prev, ...blocks]);
-      }
-
-      setHasMore(blocks.length === limit);
-      
+      setBlocks(blocks);
+      setHasMore(startHeight > 1);
+      setPage(pageNum);
     } catch (err) {
       console.error('Error fetching blocks:', err);
       setError('Failed to load blocks. Please try again.');
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
+    }
+  };
+
+  const handlePrev = () => {
+    if (page > 1) fetchBlocks(page - 1);
+  };
+  const handleNext = () => {
+    if (hasMore) fetchBlocks(page + 1);
+  };
+  const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLimit(Number(e.target.value));
+    fetchBlocks(1, true, Number(e.target.value));
+  };
+  const goFirst = () => {
+    fetchBlocks(1, true, limit);
+  };
+  const goLast = () => {
+    if (totalPages > 1) {
+      fetchBlocks(totalPages, true, limit);
     }
   };
 
@@ -237,6 +256,21 @@ export default function BlocksPage() {
             </button>
           </div>
         )}
+        <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
+          <div className="flex items-center gap-2">
+            <span>Show rows:</span>
+            <select value={limit} onChange={handleLimitChange} className="border rounded px-2 py-1">
+              {[10, 15, 25, 50, 100].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={goFirst} disabled={page === 1} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">First</button>
+            <button onClick={handlePrev} disabled={page === 1} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">Previous</button>
+            <span>Page {page} of {totalPages}</span>
+            <button onClick={handleNext} disabled={!hasMore} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">Next</button>
+            <button onClick={goLast} disabled={page === totalPages} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">Last</button>
+          </div>
+        </div>
       </div>
     </Layout>
   );

@@ -86,7 +86,7 @@ export default function Dashboard() {
 
     } catch (err) {
       console.error('Dashboard data fetch error:', err);
-      setError('Gagal memuat data dashboard. Silakan coba lagi.');
+      setError('Failed to load dashboard data. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -99,9 +99,9 @@ export default function Dashboard() {
   };
 
   const getHealthText = () => {
-    if (endpointHealth.rpc && endpointHealth.lcd) return 'Semua endpoint aktif';
-    if (endpointHealth.rpc || endpointHealth.lcd) return 'Sebagian endpoint aktif';
-    return 'Endpoint tidak aktif';
+    if (endpointHealth.rpc && endpointHealth.lcd) return 'All endpoints active';
+    if (endpointHealth.rpc || endpointHealth.lcd) return 'Some endpoints active';
+    return 'No endpoints active';
   };
 
   return (
@@ -240,7 +240,7 @@ export default function Dashboard() {
                 href="/blocks" 
                 className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
               >
-                Lihat Semua →
+                View All →
               </a>
             </div>
             
@@ -263,7 +263,7 @@ export default function Dashboard() {
                 ))
               ) : (
                 <div className="text-center py-8 text-foreground">
-                  Tidak ada blok yang ditemukan
+                  No blocks found
                 </div>
               )}
             </div>
@@ -277,7 +277,7 @@ export default function Dashboard() {
                 href="/transactions" 
                 className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
               >
-                Lihat Semua →
+                View All →
               </a>
             </div>
             
@@ -300,7 +300,7 @@ export default function Dashboard() {
                 ))
               ) : (
                 <div className="text-center py-8 text-foreground">
-                  Tidak ada transaksi yang ditemukan
+                  No transactions found
                 </div>
               )}
             </div>

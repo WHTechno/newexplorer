@@ -14,7 +14,11 @@ export default function TransactionsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [paginationKeys, setPaginationKeys] = useState<string[]>(['']); // simpan key per halaman
+  const [paginationKey, setPaginationKey] = useState<string | undefined>(undefined);
+  const [limit, setLimit] = useState(15);
+  const [total, setTotal] = useState<number | undefined>(undefined);
+  const totalPages = total ? Math.ceil(total / limit) : currentPage;
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const blocksPerPage = 5;
 
@@ -26,7 +30,7 @@ export default function TransactionsPage() {
     return () => clearInterval(interval);
   }, [currentNetwork]);
 
-  const fetchTransactions = async (page: number = 1, append: boolean = false) => {
+  const fetchTransactions = async (page: number = 1, append: boolean = false, key?: string, customLimit?: number) => {
     try {
       if (!append) {
         setIsLoading(true);
@@ -36,21 +40,51 @@ export default function TransactionsPage() {
         setIsLoadingMore(true);
       }
 
-      // Ambil transaksi asli dari API
-      const { transactions } = await getTransactions(currentNetwork, blocksPerPage, undefined);
-      if (append) {
-        setTransactions(prev => [...prev, ...transactions]);
-      } else {
-        setTransactions(transactions);
-      }
+      const result = await getTransactions(currentNetwork, customLimit || limit, key);
+      setTransactions(result.transactions);
+      setPaginationKey(result.pagination?.next_key || undefined);
       setCurrentPage(page);
-      
+      if ('total' in result && (typeof result.total === 'number' || (typeof result.total === 'string' && !isNaN(Number(result.total))))) {
+        setTotal(Number(result.total));
+      }
+      if (page > paginationKeys.length) {
+        setPaginationKeys(prev => [...prev, key || '']);
+      }
     } catch (err) {
       console.error('Error fetching transactions:', err);
       setError('Failed to load transactions. Please try again.');
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 1) {
+      const prevKey = paginationKeys[currentPage - 2];
+      fetchTransactions(currentPage - 1, false, prevKey, limit);
+      setPaginationKey(paginationKeys[currentPage - 1]);
+    }
+  };
+  const handleNext = () => {
+    if (paginationKey) {
+      fetchTransactions(currentPage + 1, false, paginationKey, limit);
+    }
+  };
+  const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLimit(Number(e.target.value));
+    setPaginationKeys(['']);
+    fetchTransactions(1, false, undefined, Number(e.target.value));
+  };
+  const goFirst = () => {
+    fetchTransactions(1, false, undefined, limit);
+  };
+  const goLast = () => {
+    // Tidak ada key untuk last, fetch page terakhir dengan key undefined (API Cosmos tidak support langsung ke last)
+    // Bisa dioptimalkan jika API mendukung
+    if (totalPages > 1) {
+      // Sementara, fetchTransactions dengan key undefined dan setCurrentPage ke totalPages
+      fetchTransactions(totalPages, false, undefined, limit);
     }
   };
 
@@ -311,6 +345,21 @@ export default function TransactionsPage() {
             </button>
           </div>
         )}
+        <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
+          <div className="flex items-center gap-2">
+            <span>Show rows:</span>
+            <select value={limit} onChange={handleLimitChange} className="border rounded px-2 py-1">
+              {[10, 15, 25, 50, 100].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={goFirst} disabled={currentPage === 1} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">First</button>
+            <button onClick={handlePrev} disabled={currentPage === 1} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">Previous</button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button onClick={handleNext} disabled={!paginationKey} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">Next</button>
+            <button onClick={goLast} disabled={currentPage === totalPages} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50">Last</button>
+          </div>
+        </div>
       </div>
     </Layout>
   );

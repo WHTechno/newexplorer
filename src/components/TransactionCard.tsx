@@ -67,7 +67,7 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
         </div>
 
         <div className="text-right text-foreground">
-          <div className={`text-sm font-medium ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>{isSuccess ? 'Berhasil' : 'Gagal'}</div>
+          <div className={`text-sm font-medium ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>{isSuccess ? 'Success' : 'Failed'}</div>
           <div className="text-xs text-foreground">Block #{transaction.height}</div>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default function TransactionCard({ transaction }: TransactionCardProps) {
             href={`/transactions/${transaction.txhash}`}
             className="text-foreground hover:text-primary font-medium text-sm transition-colors"
           >
-            Lihat Detail →
+            View Details →
           </Link>
         </div>
       </div>
