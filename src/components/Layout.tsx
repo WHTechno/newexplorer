@@ -33,7 +33,11 @@ export default function Layout({ children }: LayoutProps) {
             {/* Logo */}
             <div className="flex items-center">
               <Link href="/" className="flex items-center space-x-2 text-2xl font-extrabold tracking-tight text-foreground drop-shadow-sm">
-                <img src="/window.svg" alt="Logo" className="w-7 h-7 animate-pulse" />
+                <img
+                  src="/logo.svg"
+                  alt="Logo"
+                  className="w-9 h-9 rounded-full border-2 border-primary p-1 bg-white animate-pulse"
+                />
                 <span>WHTech</span>
               </Link>
             </div>
