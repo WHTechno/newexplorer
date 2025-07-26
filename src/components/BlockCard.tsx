@@ -12,6 +12,7 @@ interface BlockCardProps {
     data?: {
       txs?: string[];
     };
+    hash: string;
   };
 }
 
@@ -20,7 +21,7 @@ export default function BlockCard({ block }: BlockCardProps) {
   const height = parseInt(block.header.height);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-surface border border-default rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow text-foreground">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -31,21 +32,21 @@ export default function BlockCard({ block }: BlockCardProps) {
           <div>
             <Link 
               href={`/blocks/${height}`}
-              className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+              className="text-lg font-semibold text-foreground hover:text-primary transition-colors"
             >
               Block #{formatNumber(height)}
             </Link>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-foreground">
               {formatTimeAgo(block.header.time)}
             </p>
           </div>
         </div>
         
         <div className="text-right">
-          <div className="text-sm font-medium text-gray-900">
+          <div className="text-sm font-medium text-foreground">
             {txCount} Transaksi
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-foreground">
             {formatTime(block.header.time)}
           </div>
         </div>
@@ -53,26 +54,28 @@ export default function BlockCard({ block }: BlockCardProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
         <div>
-          <span className="text-gray-500">Height:</span>
-          <div className="font-medium text-gray-900">{formatNumber(height)}</div>
+          <span className="text-foreground">Height:</span>
+          <div className="font-medium text-foreground">{formatNumber(height)}</div>
+          <span className="text-foreground">Hash:</span>
+          <div className="font-mono text-foreground">{block.hash}</div>
         </div>
         
         <div>
-          <span className="text-gray-500">Proposer:</span>
-          <div className="font-mono text-gray-900">
+          <span className="text-foreground">Proposer:</span>
+          <div className="font-mono text-foreground">
             {truncateHash(block.header.proposer_address, 6)}
           </div>
         </div>
         
         <div>
-          <span className="text-gray-500">Chain ID:</span>
-          <div className="font-medium text-gray-900">{block.header.chain_id}</div>
+          <span className="text-foreground">Chain ID:</span>
+          <div className="font-medium text-foreground">{block.header.chain_id}</div>
         </div>
       </div>
 
       <div className="mt-4 pt-4 border-t border-gray-100">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-4 text-sm text-foreground">
             <span className="flex items-center">
               <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -89,7 +92,7 @@ export default function BlockCard({ block }: BlockCardProps) {
           
           <Link 
             href={`/blocks/${height}`}
-            className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+            className="text-foreground hover:text-primary font-medium text-sm transition-colors"
           >
             Lihat Detail →
           </Link>

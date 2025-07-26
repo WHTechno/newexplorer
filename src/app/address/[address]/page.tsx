@@ -39,7 +39,7 @@ export default function AddressDetailPage() {
       if (addressResult.status === 'fulfilled' && addressResult.value.found) {
         setAddressData(addressResult.value);
       } else {
-        setError('Address tidak ditemukan atau tidak valid.');
+        setError('Address not found or invalid.');
         return;
       }
 
@@ -53,7 +53,7 @@ export default function AddressDetailPage() {
 
     } catch (err) {
       console.error('Error fetching address detail:', err);
-      setError('Gagal memuat detail address. Address mungkin tidak ditemukan.');
+      setError('Failed to load address details. Address may not be found.');
     } finally {
       setIsLoading(false);
     }
@@ -95,13 +95,13 @@ export default function AddressDetailPage() {
               onClick={fetchAddressDetail}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
-              Coba Lagi
+              Try Again
             </button>
             <button
               onClick={() => router.push('/')}
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
-              Kembali ke Dashboard
+              Back to Dashboard
             </button>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function AddressDetailPage() {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h3 className="text-sm font-medium text-gray-900">Address tidak ditemukan</h3>
+          <h3 className="text-sm font-medium text-gray-900">Address not found</h3>
         </div>
       </Layout>
     );
@@ -137,7 +137,7 @@ export default function AddressDetailPage() {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-6 bg-background min-h-screen pb-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -151,7 +151,7 @@ export default function AddressDetailPage() {
                 </svg>
               </button>
               <h1 className="text-3xl font-bold text-gray-900">
-                Address Detail
+                Address Details
               </h1>
             </div>
             <p className="text-gray-600 mt-1 font-mono">
@@ -162,7 +162,7 @@ export default function AddressDetailPage() {
 
         {/* Balance Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +178,7 @@ export default function AddressDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -194,7 +194,7 @@ export default function AddressDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,7 +212,7 @@ export default function AddressDetailPage() {
         </div>
 
         {/* Address Information */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="bg-surface border border-default text-foreground rounded-lg shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">Address Information</h3>
           </div>
@@ -245,7 +245,7 @@ export default function AddressDetailPage() {
 
         {/* Balances */}
         {addressData.balances.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="bg-surface border border-default text-foreground rounded-lg shadow-sm">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 Token Balances ({addressData.balances.length})
@@ -277,7 +277,7 @@ export default function AddressDetailPage() {
 
         {/* Delegations */}
         {delegations.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="bg-surface border border-default text-foreground rounded-lg shadow-sm">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 Delegations ({delegations.length})

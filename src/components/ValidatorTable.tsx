@@ -81,29 +81,29 @@ export default function ValidatorTable({ validators, totalTokens, isLoading }: V
 
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-surface">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">
                 Rank
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">
                 Validator
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">
                 Voting Power
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">
                 Commission
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-primary uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-background divide-y divide-gray-200">
             {sortedValidators.map((validator, index) => {
               const votingPower = parseFloat(validator.tokens);
               const votingPowerPercentage = totalTokens 
@@ -114,8 +114,8 @@ export default function ValidatorTable({ validators, totalTokens, isLoading }: V
               const statusText = getValidatorStatusText(validator.status);
 
               return (
-                <tr key={validator.operator_address} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={validator.operator_address} className="hover:border border-primary">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                     #{index + 1}
                   </td>
                   
@@ -147,7 +147,7 @@ export default function ValidatorTable({ validators, totalTokens, isLoading }: V
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-foreground">
                           {validator.description.moniker}
                         </div>
                         <div className="text-sm text-gray-500 font-mono">
@@ -173,7 +173,7 @@ export default function ValidatorTable({ validators, totalTokens, isLoading }: V
                     </span>
                   </td>
                   
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                     <div>
                       <div className="font-medium">
                         {formatTokenAmountWithNetwork(validator.tokens, currentNetwork.coinSymbol, currentNetwork.coinDecimals)}
@@ -184,7 +184,7 @@ export default function ValidatorTable({ validators, totalTokens, isLoading }: V
                     </div>
                   </td>
                   
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                     {formatPercentage(commission, 2)}
                   </td>
                   

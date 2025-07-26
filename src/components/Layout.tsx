@@ -15,14 +15,14 @@ export default function Layout({ children }: LayoutProps) {
   const { currentNetwork } = useNetwork();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-surface shadow-sm border-b border-default">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-gray-900">
+              <Link href="/" className="text-xl font-bold text-foreground">
                 Cosmos Explorer
               </Link>
             </div>
@@ -31,25 +31,25 @@ export default function Layout({ children }: LayoutProps) {
             <nav className="hidden md:flex space-x-8">
               <Link 
                 href="/" 
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-foreground font-bold hover:bg-primary/20 hover:text-foreground px-3 py-2 rounded-md text-sm transition-colors"
               >
                 Dashboard
               </Link>
               <Link 
                 href="/blocks" 
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-foreground font-bold hover:bg-primary/20 hover:text-foreground px-3 py-2 rounded-md text-sm transition-colors"
               >
                 Blocks
               </Link>
               <Link 
                 href="/transactions" 
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-foreground font-bold hover:bg-primary/20 hover:text-foreground px-3 py-2 rounded-md text-sm transition-colors"
               >
                 Transactions
               </Link>
               <Link 
                 href="/validators" 
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-foreground font-bold hover:bg-primary/20 hover:text-foreground px-3 py-2 rounded-md text-sm transition-colors"
               >
                 Validators
               </Link>
@@ -122,12 +122,8 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-gray-600">
-            <p>&copy; 2024 Cosmos Explorer. Built for {currentNetwork.chainId}</p>
-          </div>
-        </div>
+      <footer className="bg-surface border-t border-default text-secondary text-sm py-4 mt-8 w-full text-center">
+        © 2024 Cosmos Explorer. Built for oro_1336-1
       </footer>
     </div>
   );

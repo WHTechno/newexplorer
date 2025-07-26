@@ -110,12 +110,12 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-600 mt-1">
-              Cosmos SDK Blockchain Explorer untuk {currentNetwork.chainId}
+              Cosmos SDK Blockchain Explorer for {currentNetwork.chainId}
             </p>
           </div>
           <div className="text-sm text-gray-500">
             {chainInfo && (
-              <span>Terakhir diperbarui: {formatTimeAgo(chainInfo.latestBlockTime)}</span>
+              <span>Latest Update: {formatTimeAgo(chainInfo.latestBlockTime)}</span>
             )}
           </div>
         </div>
@@ -245,51 +245,51 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="bg-surface border border-default rounded-lg p-6 mt-8">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <a 
               href="/blocks"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center p-4 border border-default rounded-lg hover:bg-primary/20 transition-colors bg-background"
             >
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
                 </svg>
               </div>
               <div>
-                <div className="font-medium text-gray-900">Explore Blocks</div>
-                <div className="text-sm text-gray-500">Browse blockchain blocks</div>
+                <div className="font-medium text-foreground">Explore Blocks</div>
+                <div className="text-sm text-secondary">Browse blockchain blocks</div>
               </div>
             </a>
 
             <a 
               href="/transactions"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center p-4 border border-default rounded-lg hover:bg-primary/20 transition-colors bg-background"
             >
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-10 h-10 bg-green-400/20 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
               <div>
-                <div className="font-medium text-gray-900">View Transactions</div>
-                <div className="text-sm text-gray-500">Browse network transactions</div>
+                <div className="font-medium text-foreground">View Transactions</div>
+                <div className="text-sm text-secondary">Browse network transactions</div>
               </div>
             </a>
 
             <a 
               href="/validators"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center p-4 border border-default rounded-lg hover:bg-primary/20 transition-colors bg-background"
             >
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <div className="w-10 h-10 bg-purple-400/20 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <div>
-                <div className="font-medium text-gray-900">Check Validators</div>
-                <div className="text-sm text-gray-500">View network validators</div>
+                <div className="font-medium text-foreground">Check Validators</div>
+                <div className="text-sm text-secondary">View network validators</div>
               </div>
             </a>
           </div>

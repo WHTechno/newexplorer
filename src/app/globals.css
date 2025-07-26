@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #121212; /* Darker background */
+  --surface: #1e1e1e;   /* Dark surface */
+  --primary: #1e88e5;   /* Bright blue primary */
+  --secondary: #757575;  /* Muted secondary */
+  --foreground: #ffffff; /* Pure white text */
+  --border: #2d2d2d;     /* Dark border */
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
   --color-foreground: var(--foreground);
+  --color-border: var(--border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.bg-surface { background: var(--surface); }
+.bg-primary { background: var(--primary); }
+.bg-secondary { background: var(--secondary); }
+.text-primary { color: var(--primary); }
+.text-secondary { color: var(--secondary); }
+.text-foreground { color: var(--foreground); }
+.text-muted { color: var(--secondary); }
+.border-primary { border-color: var(--primary); }
+.border-secondary { border-color: var(--secondary); }
+.border-default { border-color: var(--border); }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121212;
+    --surface: #1e1e1e;
+    --primary: #1e88e5;
+    --secondary: #757575;
+    --foreground: #ffffff;
+    --border: #2d2d2d;
+  }
 }

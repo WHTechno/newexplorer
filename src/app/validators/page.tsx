@@ -17,6 +17,11 @@ export default function ValidatorsPage() {
 
   useEffect(() => {
     fetchValidators();
+    // Auto-refresh setiap 30 detik
+    const interval = setInterval(() => {
+      fetchValidators();
+    }, 30000);
+    return () => clearInterval(interval);
   }, [currentNetwork]);
 
   const fetchValidators = async () => {
@@ -27,7 +32,7 @@ export default function ValidatorsPage() {
       setValidators(validatorsData);
     } catch (err) {
       console.error('Error fetching validators:', err);
-      setError('Gagal memuat data validator. Silakan coba lagi.');
+      setError('Failed to load validators. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -75,24 +80,24 @@ export default function ValidatorsPage() {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-6 bg-background min-h-screen pb-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Validators</h1>
-            <p className="text-gray-600 mt-1">
-              Daftar validator di jaringan {currentNetwork.chainId}
+            <h1 className="text-3xl font-bold text-foreground">Validators</h1>
+            <p className="text-foreground mt-1">
+              Validators on network {currentNetwork.chainId}
             </p>
           </div>
           <button
             onClick={refresh}
             disabled={isLoading}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-4 py-2 border border-default rounded-md shadow-sm text-sm font-medium text-foreground bg-surface hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className={`-ml-1 mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            {isLoading ? 'Memuat...' : 'Refresh'}
+            {isLoading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
 
@@ -110,7 +115,7 @@ export default function ValidatorsPage() {
                   onClick={refresh}
                   className="mt-2 text-sm text-red-800 underline hover:text-red-900"
                 >
-                  Coba lagi
+                  Try Again
                 </button>
               </div>
             </div>
@@ -119,7 +124,7 @@ export default function ValidatorsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -127,13 +132,13 @@ export default function ValidatorsPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Active Validators</div>
+                <div className="text-sm font-medium text-foreground">Active Validators</div>
                 <div className="text-2xl font-bold text-green-600">{activeValidators.length}</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,13 +146,13 @@ export default function ValidatorsPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Total Validators</div>
+                <div className="text-sm font-medium text-foreground">Total Validators</div>
                 <div className="text-2xl font-bold text-blue-600">{validators.length}</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,13 +160,13 @@ export default function ValidatorsPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Jailed Validators</div>
+                <div className="text-sm font-medium text-foreground">Jailed Validators</div>
                 <div className="text-2xl font-bold text-red-600">{jailedValidators.length}</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -169,7 +174,7 @@ export default function ValidatorsPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Avg Commission</div>
+                <div className="text-sm font-medium text-foreground">Avg Commission</div>
                 <div className="text-2xl font-bold text-purple-600">
                   {formatPercentage(averageCommission, 1)}
                 </div>
@@ -179,29 +184,29 @@ export default function ValidatorsPage() {
         </div>
 
         {/* Filters and Sorting */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <div className="bg-surface border border-default rounded-lg p-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-gray-700">Filter:</label>
+                <label className="text-sm font-medium text-foreground">Filter:</label>
                 <select 
                   value={filter}
                   onChange={(e) => setFilter(e.target.value as any)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-surface text-foreground border border-default rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="all">Semua ({validators.length})</option>
-                  <option value="active">Aktif ({activeValidators.length})</option>
-                  <option value="inactive">Tidak Aktif ({validators.length - activeValidators.length - jailedValidators.length})</option>
+                  <option value="all">All ({validators.length})</option>
+                  <option value="active">Active ({activeValidators.length})</option>
+                  <option value="inactive">Inactive ({validators.length - activeValidators.length - jailedValidators.length})</option>
                   <option value="jailed">Jailed ({jailedValidators.length})</option>
                 </select>
               </div>
               
               <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                <label className="text-sm font-medium text-foreground">Sort by:</label>
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-surface text-foreground border border-default rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="voting_power">Voting Power</option>
                   <option value="commission">Commission</option>
@@ -210,42 +215,42 @@ export default function ValidatorsPage() {
               </div>
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-foreground bg-surface border border-default px-4 py-2 rounded">
               Showing {sortedValidators.length} of {validators.length} validators
             </div>
           </div>
         </div>
 
         {/* Network Overview */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Network Overview</h3>
+        <div className="bg-surface border border-default rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Network Overview</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <div className="text-sm text-gray-600">Total Staked</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm text-foreground">Total Staked</div>
+              <div className="text-2xl font-bold text-foreground">
                 {formatNumber(Math.floor(totalStaked / Math.pow(10, currentNetwork.coinDecimals)))} {currentNetwork.coinSymbol}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-foreground">
                 {formatNumber(totalStaked)} u{currentNetwork.coinSymbol.toLowerCase()}
               </div>
             </div>
             
             <div>
-              <div className="text-sm text-gray-600">Bonded Ratio</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm text-foreground">Bonded Ratio</div>
+              <div className="text-2xl font-bold text-foreground">
                 {formatPercentage((activeValidators.length / validators.length) * 100, 1)}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-foreground">
                 {activeValidators.length} of {validators.length} validators
               </div>
             </div>
             
             <div>
-              <div className="text-sm text-gray-600">Average Commission</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm text-foreground">Average Commission</div>
+              <div className="text-2xl font-bold text-foreground">
                 {formatPercentage(averageCommission, 2)}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-foreground">
                 Across all validators
               </div>
             </div>
@@ -260,20 +265,20 @@ export default function ValidatorsPage() {
         />
 
         {/* Additional Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-surface border border-default rounded-lg p-4">
           <div className="flex">
-            <svg className="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">Tentang Validators</h3>
-              <div className="text-sm text-blue-700 mt-1">
-                <p>Validator adalah node yang berpartisipasi dalam konsensus jaringan. Mereka memvalidasi transaksi dan mengamankan jaringan.</p>
+              <h3 className="text-sm font-medium text-foreground">About Validators</h3>
+              <div className="text-sm text-foreground mt-1">
+                <p>A validator is a node that participates in the consensus of the network. They validate transactions and secure the network.</p>
                 <ul className="list-disc list-inside mt-2 space-y-1">
-                  <li><strong>Active:</strong> Validator yang sedang berpartisipasi dalam konsensus</li>
-                  <li><strong>Inactive:</strong> Validator yang tidak berpartisipasi dalam konsensus</li>
-                  <li><strong>Jailed:</strong> Validator yang dikenai sanksi karena pelanggaran</li>
-                  <li><strong>Commission:</strong> Persentase reward yang diambil validator dari delegator</li>
+                  <li><strong>Active:</strong> Validator that is currently participating in consensus</li>
+                  <li><strong>Inactive:</strong> Validator that is not participating in consensus</li>
+                  <li><strong>Jailed:</strong> Validator that has been penalized for misconduct</li>
+                  <li><strong>Commission:</strong> Percentage of rewards taken by validator from delegator</li>
                 </ul>
               </div>
             </div>

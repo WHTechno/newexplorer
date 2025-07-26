@@ -23,7 +23,7 @@ export async function getLatestBlock(network: Network) {
 // Get block by height
 export async function getBlockByHeight(network: Network, height: string) {
   const data = await apiCall(`${network.lcdEndpoint}/cosmos/base/tendermint/v1beta1/blocks/${height}`);
-  return data.block;
+  return { ...data.block, hash: data.block_id?.hash };
 }
 
 // Get latest validator set
@@ -139,8 +139,8 @@ export async function searchAddressByAddress(network: Network, address: string) 
     const account = accountData.status === 'fulfilled' ? accountData.value.account : null;
     const balances = balanceData.status === 'fulfilled' ? balanceData.value.balances : [];
 
-    // If any of the calls succeed, consider the address found
-    if (delegations.length > 0 || account || balances.length > 0) {
+    // If account exists, consider the address found (even if delegations/balances are empty)
+    if (account) {
       return {
         found: true,
         account,
@@ -283,7 +283,7 @@ export async function getBlocks(network: Network, page = 1, limit = 10) {
       }
     }
 
-    return blocks;
+    return blocks.map(block => ({ ...block, hash: block.hash }));
   } catch (error) {
     console.error('Error fetching blocks:', error);
     throw error;

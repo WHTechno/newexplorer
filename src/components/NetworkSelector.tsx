@@ -41,7 +41,7 @@ export default function NetworkSelector() {
           ></div>
           
           {/* Dropdown */}
-          <div className="absolute right-0 z-20 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg">
+          <div className="absolute right-0 z-20 mt-2 w-64 bg-surface text-foreground border border-default rounded-md shadow-lg">
             <div className="py-1">
               <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100">
                 Select Network
@@ -50,14 +50,14 @@ export default function NetworkSelector() {
                 <button
                   key={network.id}
                   onClick={() => handleNetworkChange(network.id)}
-                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors ${
-                    currentNetwork.id === network.id ? 'bg-blue-50 border-r-2 border-blue-500' : ''
+                  className={`w-full text-left px-4 py-3 hover:bg-primary transition-colors ${
+                    currentNetwork.id === network.id ? 'bg-primary border-r-2 border-primary' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className={`w-2 h-2 rounded-full ${
-                        currentNetwork.id === network.id ? 'bg-blue-500' : 'bg-gray-300'
+                        currentNetwork.id === network.id ? 'bg-primary' : 'bg-gray-300'
                       }`}></div>
                       <div>
                         <div className="text-sm font-medium text-gray-900">
@@ -69,7 +69,7 @@ export default function NetworkSelector() {
                       </div>
                     </div>
                     {currentNetwork.id === network.id && (
-                      <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     )}

@@ -17,6 +17,11 @@ export default function BlocksPage() {
 
   useEffect(() => {
     fetchBlocks(1, true);
+    // Auto-refresh setiap 30 detik
+    const interval = setInterval(() => {
+      fetchBlocks(1, true);
+    }, 30000);
+    return () => clearInterval(interval);
   }, [currentNetwork]);
 
   const fetchBlocks = async (pageNum: number, reset = false) => {
@@ -41,7 +46,7 @@ export default function BlocksPage() {
       
     } catch (err) {
       console.error('Error fetching blocks:', err);
-      setError('Gagal memuat data blok. Silakan coba lagi.');
+      setError('Failed to load blocks. Please try again.');
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
@@ -63,24 +68,24 @@ export default function BlocksPage() {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-6 bg-background min-h-screen pb-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Blocks</h1>
-            <p className="text-gray-600 mt-1">
-              Daftar blok terbaru di jaringan {currentNetwork.chainId}
+            <h1 className="text-3xl font-bold text-foreground">Blocks</h1>
+            <p className="text-foreground mt-1">
+              Latest blocks on network {currentNetwork.chainId}
             </p>
           </div>
           <button
             onClick={refresh}
             disabled={isLoading}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-4 py-2 border border-default rounded-md shadow-sm text-sm font-medium text-foreground bg-surface hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className={`-ml-1 mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            {isLoading ? 'Memuat...' : 'Refresh'}
+            {isLoading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
 
@@ -98,7 +103,7 @@ export default function BlocksPage() {
                   onClick={refresh}
                   className="mt-2 text-sm text-red-800 underline hover:text-red-900"
                 >
-                  Coba lagi
+                  Try Again
                 </button>
               </div>
             </div>
@@ -107,7 +112,7 @@ export default function BlocksPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,13 +120,13 @@ export default function BlocksPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Total Blocks Loaded</div>
-                <div className="text-2xl font-bold text-gray-900">{blocks.length}</div>
+                <div className="text-sm font-medium text-foreground">Total Blocks Loaded</div>
+                <div className="text-2xl font-bold text-foreground">{blocks.length}</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -129,15 +134,15 @@ export default function BlocksPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Latest Block</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-sm font-medium text-foreground">Latest Block</div>
+                <div className="text-2xl font-bold text-foreground">
                   {blocks.length > 0 ? `#${parseInt(blocks[0].header.height).toLocaleString()}` : '-'}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-surface border border-default text-foreground rounded-lg p-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -145,8 +150,8 @@ export default function BlocksPage() {
                 </svg>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-600">Total Transactions</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-sm font-medium text-foreground">Total Transactions</div>
+                <div className="text-2xl font-bold text-foreground">
                   {blocks.reduce((total, block) => total + (block.data?.txs?.length || 0), 0).toLocaleString()}
                 </div>
               </div>
@@ -159,7 +164,7 @@ export default function BlocksPage() {
           {isLoading && blocks.length === 0 ? (
             // Loading skeleton
             [...Array(5)].map((_, i) => (
-              <div key={i} className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse">
+              <div key={i} className="bg-surface border border-default text-foreground rounded-lg p-6 animate-pulse">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
                   <div className="flex-1">
@@ -187,9 +192,9 @@ export default function BlocksPage() {
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
               </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Tidak ada blok</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Tidak ada blok yang ditemukan.
+              <h3 className="mt-2 text-sm font-medium text-foreground">No blocks</h3>
+              <p className="mt-1 text-sm text-foreground">
+                No blocks found.
               </p>
             </div>
           )}
@@ -201,7 +206,7 @@ export default function BlocksPage() {
             <button
               onClick={loadMore}
               disabled={isLoadingMore}
-              className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-6 py-3 border border-default rounded-md shadow-sm text-sm font-medium text-foreground bg-surface hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoadingMore ? (
                 <>
@@ -213,7 +218,7 @@ export default function BlocksPage() {
                   <svg className="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
-                  Muat Lebih Banyak
+                  Load More
                 </>
               )}
             </button>

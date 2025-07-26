@@ -38,7 +38,7 @@ export default function SearchBar() {
           }
           break;
         case 'address':
-          // Search for address using /cosmos/staking/v1beta1/delegations/<address>
+          // Search for address using all endpoints
           const addressResult = await searchAddressByAddress(currentNetwork, query.trim());
           if (addressResult.found) {
             router.push(`/address/${query.trim()}`);
@@ -135,7 +135,6 @@ export default function SearchBar() {
                 <span className="text-sm font-medium">Tidak ditemukan</span>
               </div>
               <p className="text-sm text-gray-600 mt-1">{searchResults.error}</p>
-              
               {/* Show endpoint information */}
               <div className="mt-2 p-2 bg-blue-50 rounded text-xs">
                 <div className="font-medium text-blue-800">Endpoint yang digunakan:</div>
@@ -146,6 +145,33 @@ export default function SearchBar() {
                   <code className="text-blue-700">/cosmos/staking/v1beta1/delegations/{query}</code>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Address summary if found */}
+          {searchResults && searchResults.found && searchResults.type === 'address' && (
+            <div className="p-4 border-b border-gray-200">
+              <div className="mb-2 text-xs text-gray-500">Ringkasan Alamat</div>
+              <div className="font-mono text-sm break-all mb-2">{query}</div>
+              <div className="grid grid-cols-1 gap-2 text-xs mb-2">
+                <div><span className="font-medium text-gray-700">Tipe Akun:</span> {searchResults.account?.['@type']?.split('.').pop() || 'Standard Account'}</div>
+                <div><span className="font-medium text-gray-700">Account Number:</span> {searchResults.account?.account_number || 'N/A'}</div>
+                <div><span className="font-medium text-gray-700">Sequence:</span> {searchResults.account?.sequence || '0'}</div>
+                <div><span className="font-medium text-gray-700">Balance:</span> {searchResults.balances && searchResults.balances.length > 0 ? `${parseFloat(searchResults.balances[0].amount).toLocaleString()} ${searchResults.balances[0].denom.toUpperCase()}` : '0'}</div>
+                <div><span className="font-medium text-gray-700">Delegasi:</span> {searchResults.delegations ? searchResults.delegations.length : 0}</div>
+              </div>
+              {/* Rewards summary */}
+              {searchResults.rewards && (
+                <div className="mb-2 text-xs text-gray-700">
+                  <span className="font-medium">Rewards:</span> {Array.isArray(searchResults.rewards) && searchResults.rewards.length > 0 ? searchResults.rewards.map((r: any) => `${parseFloat(r.reward?.[0]?.amount || '0').toLocaleString()} ${r.reward?.[0]?.denom?.toUpperCase() || ''}`).join(', ') : '0'}
+                </div>
+              )}
+              <button
+                className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 px-4 rounded"
+                onMouseDown={e => { e.preventDefault(); router.push(`/address/${query}`); }}
+              >
+                Lihat Detail
+              </button>
             </div>
           )}
           
