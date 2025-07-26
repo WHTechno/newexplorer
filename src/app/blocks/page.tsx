@@ -1,0 +1,225 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Layout from '@/components/Layout';
+import BlockCard from '@/components/BlockCard';
+import { getBlocks } from '@/lib/cosmos-api';
+import { useNetwork } from '@/contexts/NetworkContext';
+
+export default function BlocksPage() {
+  const { currentNetwork } = useNetwork();
+  const [blocks, setBlocks] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  useEffect(() => {
+    fetchBlocks(1, true);
+  }, [currentNetwork]);
+
+  const fetchBlocks = async (pageNum: number, reset = false) => {
+    try {
+      if (reset) {
+        setIsLoading(true);
+        setError(null);
+      } else {
+        setIsLoadingMore(true);
+      }
+
+      const newBlocks = await getBlocks(currentNetwork, pageNum, 10);
+      
+      if (reset) {
+        setBlocks(newBlocks);
+      } else {
+        setBlocks(prev => [...prev, ...newBlocks]);
+      }
+
+      // Check if there are more blocks to load
+      setHasMore(newBlocks.length === 10);
+      
+    } catch (err) {
+      console.error('Error fetching blocks:', err);
+      setError('Gagal memuat data blok. Silakan coba lagi.');
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!isLoadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchBlocks(nextPage, false);
+    }
+  };
+
+  const refresh = () => {
+    setPage(1);
+    fetchBlocks(1, true);
+  };
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Blocks</h1>
+            <p className="text-gray-600 mt-1">
+              Daftar blok terbaru di jaringan {currentNetwork.chainId}
+            </p>
+          </div>
+          <button
+            onClick={refresh}
+            disabled={isLoading}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg className={`-ml-1 mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            {isLoading ? 'Memuat...' : 'Refresh'}
+          </button>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex">
+              <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error</h3>
+                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <button
+                  onClick={refresh}
+                  className="mt-2 text-sm text-red-800 underline hover:text-red-900"
+                >
+                  Coba lagi
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-600">Total Blocks Loaded</div>
+                <div className="text-2xl font-bold text-gray-900">{blocks.length}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-600">Latest Block</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {blocks.length > 0 ? `#${parseInt(blocks[0].header.height).toLocaleString()}` : '-'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-600">Total Transactions</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {blocks.reduce((total, block) => total + (block.data?.txs?.length || 0), 0).toLocaleString()}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Blocks List */}
+        <div className="space-y-4">
+          {isLoading && blocks.length === 0 ? (
+            // Loading skeleton
+            [...Array(5)].map((_, i) => (
+              <div key={i} className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div className="text-right">
+                    <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-16"></div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="h-3 bg-gray-200 rounded"></div>
+                  <div className="h-3 bg-gray-200 rounded"></div>
+                  <div className="h-3 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ))
+          ) : blocks.length > 0 ? (
+            blocks.map((block, index) => (
+              <BlockCard key={`${block.header.height}-${index}`} block={block} />
+            ))
+          ) : !isLoading && (
+            <div className="text-center py-12">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">Tidak ada blok</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Tidak ada blok yang ditemukan.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Load More Button */}
+        {hasMore && blocks.length > 0 && (
+          <div className="flex justify-center">
+            <button
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoadingMore ? (
+                <>
+                  <div className="animate-spin -ml-1 mr-2 h-4 w-4 border-2 border-gray-500 border-t-transparent rounded-full"></div>
+                  Memuat...
+                </>
+              ) : (
+                <>
+                  <svg className="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                  Muat Lebih Banyak
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    </Layout>
+  );
+}
