@@ -20,10 +20,19 @@ export async function getLatestBlock(network: Network) {
   return data.block;
 }
 
-// Get block by height
+// Get block by height (updated to use RPC endpoint)
 export async function getBlockByHeight(network: Network, height: string) {
-  const data = await apiCall(`${network.lcdEndpoint}/cosmos/base/tendermint/v1beta1/blocks/${height}`);
-  return { ...data.block, hash: data.block_id?.hash };
+  try {
+    const response = await fetch(`${network.rpcEndpoint}/block?height=${height}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.result.block;
+  } catch (error) {
+    console.error(`RPC call failed for block ${height}:`, error);
+    throw error;
+  }
 }
 
 // Get latest validator set
@@ -287,6 +296,42 @@ export async function getBlocks(network: Network, page = 1, limit = 10) {
   } catch (error) {
     console.error('Error fetching blocks:', error);
     throw error;
+  }
+}
+
+// Helper function for API calls with error handling
+async function apiCall(url: string) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`API call failed for ${url}:`, error);
+    throw error;
+  }
+}
+
+// Get block from RPC endpoint with fallback to LCD
+export async function getBlockFromRPC(network: Network, height: string) {
+  try {
+    const response = await fetch(`${network.rpcEndpoint}/block?height=${height}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.result.block;
+  } catch (error) {
+    console.warn(`RPC call failed for block ${height}, falling back to LCD:`, error);
+    // Fallback to LCD endpoint
+    try {
+      const lcdData = await apiCall(`${network.lcdEndpoint}/cosmos/base/tendermint/v1beta1/blocks/${height}`);
+      return lcdData.block;
+    } catch (lcdError) {
+      console.error(`LCD call also failed for block ${height}:`, lcdError);
+      throw lcdError;
+    }
   }
 }
 

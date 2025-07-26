@@ -53,6 +53,12 @@ export default function Layout({ children }: LayoutProps) {
               >
                 Validators
               </Link>
+              <Link 
+                href="/uptime" 
+                className="text-foreground font-bold hover:bg-primary/20 hover:text-foreground px-3 py-2 rounded-md text-sm transition-colors"
+              >
+                Uptime
+              </Link>
             </nav>
 
             {/* Right side - Network Selector and Search */}
@@ -105,6 +111,13 @@ export default function Layout({ children }: LayoutProps) {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Validators
+                </Link>
+                <Link 
+                  href="/uptime" 
+                  className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Uptime
                 </Link>
               </div>
               <div className="px-4 py-3 space-y-3">

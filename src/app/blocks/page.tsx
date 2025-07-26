@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import BlockCard from '@/components/BlockCard';
-import { getBlocks } from '@/lib/cosmos-api';
+import { getBlockByHeight } from '@/lib/cosmos-api';
 import { useNetwork } from '@/contexts/NetworkContext';
 
 export default function BlocksPage() {
@@ -33,16 +33,29 @@ export default function BlocksPage() {
         setIsLoadingMore(true);
       }
 
-      const newBlocks = await getBlocks(currentNetwork, pageNum, 10);
-      
-      if (reset) {
-        setBlocks(newBlocks);
-      } else {
-        setBlocks(prev => [...prev, ...newBlocks]);
+      const latestBlock = await getBlockByHeight(currentNetwork, 'latest');
+      const latestHeight = parseInt(latestBlock.header.height);
+      const limit = 10;
+      const startHeight = Math.max(1, latestHeight - (pageNum - 1) * limit);
+      const endHeight = Math.max(1, startHeight - limit + 1);
+
+      const blocks: any[] = [];
+      for (let height = startHeight; height >= endHeight; height--) {
+        try {
+          const block = await getBlockByHeight(currentNetwork, height.toString());
+          blocks.push(block);
+        } catch (error) {
+          console.error(`Error fetching block ${height}:`, error);
+        }
       }
 
-      // Check if there are more blocks to load
-      setHasMore(newBlocks.length === 10);
+      if (reset) {
+        setBlocks(blocks);
+      } else {
+        setBlocks(prev => [...prev, ...blocks]);
+      }
+
+      setHasMore(blocks.length === limit);
       
     } catch (err) {
       console.error('Error fetching blocks:', err);
