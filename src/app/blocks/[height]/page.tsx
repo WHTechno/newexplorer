@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { getBlockByHeight } from '@/lib/cosmos-api';
-import { formatTime, formatNumber, truncateHash } from '@/lib/utils';
+import { formatTime, formatNumber, truncateHash, base64ToHex } from '@/lib/utils';
 import { useNetwork } from '@/contexts/NetworkContext';
 
 export default function BlockDetailPage() {
@@ -259,28 +259,28 @@ export default function BlockDetailPage() {
               <div>
                 <dt className="text-sm font-medium text-gray-600">Block Hash</dt>
                 <dd className="mt-1 text-sm text-gray-900 font-mono break-all">
-                  {block.block_id?.hash || 'N/A'}
+                  {block.block_id?.hash ? base64ToHex(block.block_id.hash).toUpperCase() : 'N/A'}
                 </dd>
               </div>
               
               <div>
                 <dt className="text-sm font-medium text-gray-600">Previous Block Hash</dt>
                 <dd className="mt-1 text-sm text-gray-900 font-mono break-all">
-                  {block.header.last_block_id?.hash || 'N/A'}
+                  {block.header.last_block_id?.hash ? base64ToHex(block.header.last_block_id.hash).toUpperCase() : 'N/A'}
                 </dd>
               </div>
               
               <div>
                 <dt className="text-sm font-medium text-gray-600">Data Hash</dt>
                 <dd className="mt-1 text-sm text-gray-900 font-mono break-all">
-                  {block.header.data_hash || 'N/A'}
+                  {block.header.data_hash ? base64ToHex(block.header.data_hash).toUpperCase() : 'N/A'}
                 </dd>
               </div>
               
               <div>
                 <dt className="text-sm font-medium text-gray-600">Validators Hash</dt>
                 <dd className="mt-1 text-sm text-gray-900 font-mono break-all">
-                  {block.header.validators_hash || 'N/A'}
+                  {block.header.validators_hash ? base64ToHex(block.header.validators_hash).toUpperCase() : 'N/A'}
                 </dd>
               </div>
             </dl>

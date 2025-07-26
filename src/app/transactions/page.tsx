@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import TransactionCard from '@/components/TransactionCard';
-import { getLatestBlock } from '@/lib/cosmos-api';
+import { getLatestBlock, getTransactions } from '@/lib/cosmos-api';
 import { useNetwork } from '@/contexts/NetworkContext';
 import { formatTime } from '@/lib/utils';
 
@@ -36,100 +36,13 @@ export default function TransactionsPage() {
         setIsLoadingMore(true);
       }
 
-      const latestBlockData = await getLatestBlock(currentNetwork);
-      if (!latestBlockData || !latestBlockData.header) {
-        throw new Error('Data blok terbaru tidak tersedia');
-      }
-      
-      if (!append) {
-        setLatestBlock(latestBlockData);
-      }
-
-      const latestHeight = parseInt(latestBlockData.header.height);
-      const startHeight = latestHeight - ((page - 1) * blocksPerPage);
-      const endHeight = Math.max(1, startHeight - blocksPerPage + 1);
-
-      const totalBlocks = latestHeight;
-      const calculatedTotalPages = Math.ceil(totalBlocks / blocksPerPage);
-      setTotalPages(calculatedTotalPages);
-
-      const allTransactions: any[] = [];
-      
-      for (let height = startHeight; height >= endHeight && height > 0; height--) {
-        try {
-          const blockTransactions = height === latestHeight ? (latestBlockData.data?.txs || []) : [];
-          
-          const formattedTransactions = blockTransactions.map((txData: string, index: number) => {
-            const txHash = `${height}_${index}`;
-            
-            return {
-              txhash: txHash,
-              height: height.toString(),
-              timestamp: latestBlockData.header.time,
-              tx: {
-                body: {
-                  messages: [{
-                    '@type': '/cosmos.bank.v1beta1.MsgSend',
-                    from_address: 'unknown',
-                    to_address: 'unknown',
-                    amount: []
-                  }]
-                },
-                auth_info: {
-                  fee: {
-                    amount: [{ denom: currentNetwork.coinSymbol.toLowerCase(), amount: '0' }],
-                    gas_limit: '200000'
-                  }
-                }
-              },
-              code: 0,
-              gas_used: '150000',
-              gas_wanted: '200000',
-              raw_data: txData
-            };
-          });
-
-          allTransactions.push(...formattedTransactions);
-        } catch (blockError) {
-          console.warn(`Error fetching block ${height}:`, blockError);
-        }
-      }
-
-      if (allTransactions.length === 0) {
-        const sampleTransactions = Array.from({ length: 3 }, (_, index) => ({
-          txhash: `sample_${page}_${index}`,
-          height: (startHeight - index).toString(),
-          timestamp: latestBlockData.header.time,
-          tx: {
-            body: {
-              messages: [{
-                '@type': '/cosmos.bank.v1beta1.MsgSend',
-                from_address: 'sample_address_from',
-                to_address: 'sample_address_to',
-                amount: [{ denom: currentNetwork.coinSymbol.toLowerCase(), amount: '1000000' }]
-              }]
-            },
-            auth_info: {
-              fee: {
-                amount: [{ denom: currentNetwork.coinSymbol.toLowerCase(), amount: '5000' }],
-                gas_limit: '200000'
-              }
-            }
-          },
-          code: 0,
-          gas_used: '150000',
-          gas_wanted: '200000',
-          raw_data: `sample_data_${index}`
-        }));
-        allTransactions.push(...sampleTransactions);
-      }
-      
+      // Ambil transaksi asli dari API
+      const { transactions } = await getTransactions(currentNetwork, blocksPerPage, undefined);
       if (append) {
-        setTransactions(prev => [...prev, ...allTransactions]);
+        setTransactions(prev => [...prev, ...transactions]);
       } else {
-        setTransactions(allTransactions);
+        setTransactions(transactions);
       }
-      
       setCurrentPage(page);
       
     } catch (err) {

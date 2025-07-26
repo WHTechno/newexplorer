@@ -43,7 +43,7 @@ export default function BlocksPage() {
       for (let height = startHeight; height >= endHeight; height--) {
         try {
           const block = await getBlockByHeight(currentNetwork, height.toString());
-          blocks.push(block);
+          blocks.push({ ...block, hash: block.block_id?.hash || '' });
         } catch (error) {
           console.error(`Error fetching block ${height}:`, error);
         }

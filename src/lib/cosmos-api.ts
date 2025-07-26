@@ -1,4 +1,5 @@
 import { Network } from './networks';
+import { getTxHashFromBase64 } from './utils';
 
 // Helper function for API calls with error handling
 async function apiCall(url: string) {
@@ -20,17 +21,16 @@ export async function getLatestBlock(network: Network) {
   return data.block;
 }
 
-// Get block by height (updated to use RPC endpoint)
+// Get block by height (gunakan REST API/lcdEndpoint)
 export async function getBlockByHeight(network: Network, height: string) {
   try {
-    const response = await fetch(`${network.rpcEndpoint}/block?height=${height}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data.result.block;
+    const url = height === 'latest'
+      ? `${network.lcdEndpoint}/cosmos/base/tendermint/v1beta1/blocks/latest`
+      : `${network.lcdEndpoint}/cosmos/base/tendermint/v1beta1/blocks/${height}`;
+    const data = await apiCall(url);
+    return data.block;
   } catch (error) {
-    console.error(`RPC call failed for block ${height}:`, error);
+    console.error(`REST call failed for block ${height}:`, error);
     throw error;
   }
 }
@@ -175,12 +175,11 @@ export async function searchAddressByAddress(network: Network, address: string) 
 
 // Get recent transactions with pagination
 export async function getRecentTransactions(network: Network, limit = 10, offset = 0) {
-  // Permanently use latest block transactions as data source
   const latestBlock = await getLatestBlock(network);
   const blockTxs = latestBlock.data?.txs || [];
   // Format block transactions to match expected structure
-  const formattedTxs = blockTxs.map((txData: string, index: number) => ({
-    txhash: `${latestBlock.header.height}_${index}`,
+  const formattedTxs = await Promise.all(blockTxs.map(async (txData: string) => ({
+    txhash: await getTxHashFromBase64(txData),
     height: latestBlock.header.height,
     timestamp: latestBlock.header.time,
     tx: {
@@ -203,7 +202,7 @@ export async function getRecentTransactions(network: Network, limit = 10, offset
     gas_used: '0',
     gas_wanted: '0',
     raw_data: txData
-  }));
+  })));
   return {
     transactions: formattedTxs,
     pagination: null,
@@ -217,11 +216,21 @@ export async function getTransactions(network: Network, limit = 10, paginationKe
   if (paginationKey) {
     url += `&pagination.key=${encodeURIComponent(paginationKey)}`;
   }
-  const data = await apiCall(url);
-  return {
-    transactions: data.tx_responses || [],
-    pagination: data.pagination || null
-  };
+  try {
+    const data = await apiCall(url);
+    if (data.tx_responses && data.tx_responses.length > 0) {
+      return {
+        transactions: data.tx_responses,
+        pagination: data.pagination || null
+      };
+    } else {
+      // Fallback ke blok terbaru jika tidak ada transaksi
+      return await getRecentTransactions(network, limit);
+    }
+  } catch (err) {
+    // Fallback ke blok terbaru jika error
+    return await getRecentTransactions(network, limit);
+  }
 }
 
 // Get account info
@@ -300,18 +309,18 @@ export async function getBlocks(network: Network, page = 1, limit = 10) {
 }
 
 // Helper function for API calls with error handling
-async function apiCall(url: string) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`API call failed for ${url}:`, error);
-    throw error;
-  }
-}
+// async function apiCall(url: string) {
+//   try {
+//     const response = await fetch(url);
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+//     return await response.json();
+//   } catch (error) {
+//     console.error(`API call failed for ${url}:`, error);
+//     throw error;
+//   }
+// }
 
 // Get block from RPC endpoint with fallback to LCD
 export async function getBlockFromRPC(network: Network, height: string) {

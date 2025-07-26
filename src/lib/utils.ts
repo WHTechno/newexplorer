@@ -177,3 +177,31 @@ export function determineSearchType(query: string): 'block' | 'tx' | 'address' |
   }
   return 'unknown';
 }
+
+// Konversi base64 ke hex
+export function base64ToHex(base64: string): string {
+  if (!base64) return '';
+  // atob tidak tersedia di Node.js, gunakan Buffer
+  const buffer = typeof window === 'undefined'
+    ? Buffer.from(base64, 'base64')
+    : Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  return Array.from(buffer)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// Hash SHA256 dari base64 tx (Node.js & browser)
+export async function getTxHashFromBase64(base64: string): Promise<string> {
+  if (!base64) return '';
+  if (typeof window === 'undefined') {
+    // Node.js
+    const { createHash } = await import('crypto');
+    const txBytes = Buffer.from(base64, 'base64');
+    return createHash('sha256').update(txBytes).digest('hex').toUpperCase();
+  } else {
+    // Browser
+    const txBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', txBytes);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { formatTime, formatTimeAgo, formatNumber, truncateHash } from '@/lib/utils';
+import { formatTime, formatTimeAgo, formatNumber, truncateHash, base64ToHex } from '@/lib/utils';
 
 interface BlockCardProps {
   block: {
@@ -56,7 +56,9 @@ export default function BlockCard({ block }: BlockCardProps) {
         <div>
           <span className="text-foreground">Height:</span>
           <div className="font-medium text-foreground">{formatNumber(height)}</div>
-          <span className="text-foreground">Hash:</span>
+          <span className="text-foreground">Hash (hex):</span>
+          <div className="font-mono text-foreground">{base64ToHex(block.hash)}</div>
+          <span className="text-foreground">Hash (base64):</span>
           <div className="font-mono text-foreground">{block.hash}</div>
         </div>
         
