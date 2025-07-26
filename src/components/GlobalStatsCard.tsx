@@ -52,7 +52,16 @@ export default function GlobalStatsCard({
   }
 
   return (
-    <div className={`border rounded-lg p-6 shadow-sm transition-all hover:shadow-md bg-surface border-default text-foreground`}>
+    <div className={`relative border rounded-lg p-6 shadow-sm transition-all hover:shadow-md bg-surface border-default text-foreground`}>
+      {/* Blinking dot in top right */}
+      <span
+        className={`absolute top-2 right-2 w-4 h-4 rounded-full animate-pulse ring-2 ring-white
+          ${status === 'success' ? 'bg-green-400' : ''}
+          ${status === 'warning' ? 'bg-yellow-400' : ''}
+          ${status === 'error' ? 'bg-red-400' : ''}
+          ${status === 'info' ? 'bg-primary' : ''}
+        `}
+      />
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <h3 className="text-sm font-medium text-secondary mb-2">{title}</h3>

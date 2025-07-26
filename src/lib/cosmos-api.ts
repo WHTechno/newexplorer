@@ -6,7 +6,16 @@ async function apiCall(url: string) {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorBody = await response.text();
+        if (errorBody) {
+          errorMessage += `\nServer message: ${errorBody}`;
+        }
+      } catch (e) {
+        // ignore
+      }
+      throw new Error(errorMessage);
     }
     return await response.json();
   } catch (error) {
@@ -212,7 +221,8 @@ export async function getRecentTransactions(network: Network, limit = 10, offset
 
 // Get transactions with pagination key
 export async function getTransactions(network: Network, limit = 10, paginationKey?: string) {
-  let url = `${network.lcdEndpoint}/cosmos/tx/v1beta1/txs?limit=${limit}&order_by=ORDER_BY_DESC`;
+  // Use a universal events query to fetch all transactions
+  let url = `${network.lcdEndpoint}/cosmos/tx/v1beta1/txs?limit=${limit}&order_by=ORDER_BY_DESC&events=tx.height%3E0`;
   if (paginationKey) {
     url += `&pagination.key=${encodeURIComponent(paginationKey)}`;
   }
